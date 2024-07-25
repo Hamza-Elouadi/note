@@ -1,51 +1,71 @@
-var btn = document.getElementById("btn");
+        var btn = document.getElementById("btn");
+        var inputEle = document.getElementById("input");
+        var pEle = document.getElementById("p");
 
-var inputEle = document.getElementById("input");
+        // Load saved ideas from localStorage
+        window.onload = function() {
+            var savedIdeas = JSON.parse(localStorage.getItem("ideas")) || [];
+            savedIdeas.forEach(function(idea) {
+                addIdea(idea);
+            });
+        };
 
-var pEle = document.getElementById("p");
+        // Save ideas to localStorage
+        function saveIdea(idea) {
+            var savedIdeas = JSON.parse(localStorage.getItem("ideas")) || [];
+            savedIdeas.push(idea);
+            localStorage.setItem("ideas", JSON.stringify(savedIdeas));
+        }
 
-btn.addEventListener('click' , function() {
+        // Delete idea from localStorage
+        function deleteIdea(idea) {
+            var savedIdeas = JSON.parse(localStorage.getItem("ideas")) || [];
+            savedIdeas = savedIdeas.filter(function(savedIdea) {
+                return savedIdea !== idea;
+            });
+            localStorage.setItem("ideas", JSON.stringify(savedIdeas));
+        }
 
-    if ( inputEle.value !=="") {
+        // Function to add an idea to the DOM
+        function addIdea(idea) {
+            var newline = document.createElement("div");
+            newline.className = "line";
 
-        var newline = document.createElement("div");
-        newline.className = "line";
-        newline.classList.add('newline')
-        // إضافة النص المدخل
-        var span = document.createElement("span");
-        span.textContent = inputEle.value;
+            var span = document.createElement("span");
+            span.textContent = idea;
 
-        // إنشاء زر الحذف
-        var deletebtn = document.createElement("button");
-        deletebtn.textContent = "delete";
-        deletebtn.classList.add('deletebtn')
-        deletebtn.addEventListener('click', function() {
-            pEle.removeChild(newline); // إزالة السطر عند النقر على زر الحذف
+            var deletebtn = document.createElement("button");
+            deletebtn.textContent = "delete";
+            deletebtn.classList.add('deletebtn');
+            deletebtn.addEventListener('click', function() {
+                pEle.removeChild(newline);
+                deleteIdea(idea);
+            });
+
+            newline.appendChild(span);
+            newline.appendChild(deletebtn);
+            pEle.appendChild(newline);
+        }
+
+        btn.addEventListener('click', function() {
+            if (inputEle.value !== "") {
+                var idea = inputEle.value;
+                addIdea(idea);
+                saveIdea(idea);
+                inputEle.value = "";
+            }
         });
 
-        // إضافة النص وزر الحذف إلى السطر
-        newline.appendChild(span); // إضافة النص إلى السطر
-        newline.appendChild(deletebtn); // إضافة زر الحذف إلى السطر
+        var bttnEle = document.getElementById("bttn");
+        var containerEle = document.getElementsByClassName("container")[0];
+        var colors = ["white", "black"];
+        var i = 0;
 
-        // إضافة السطر إلى العنصر p
-        pEle.appendChild(newline);
+        bttnEle.onclick = function() {
+            containerEle.style.backgroundColor = colors[i];
+            i++;
 
-        inputEle.value =""};
-});
-
-var bttnEle = document.getElementById("bttn");
-
-var containerEle = document.getElementsByClassName("container")[0];
-
-var colors = ["white", "black"];
-
-var i = 0;
-
-bttnEle.onclick = function() {
-    containerEle.style.backgroundColor = colors[i];
-    i++;
-
-    if (i == 2) {
-        i = 0;
-    }
-};
+            if (i == 2) {
+                i = 0;
+            }
+        };
